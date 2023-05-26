@@ -680,4 +680,9 @@ class StateGenerator:
     def __init__(self, encoding):
         assert isinstance(encoding, perceval.Encoding), "You need to provide an Encoding, e.g. Encoding.RAW or Encoding.DUAL_RAIL"
         self.encoding = encoding
-        print("Test")
+
+    def LogicalState(self, state: list[int]):
+        ls = perceval.LogicalState(state)
+        sv = StateVector(bs = ls.to_basic_state([perceval.Port(perceval.Encoding.DUAL_RAIL, "p1"), perceval.Port(perceval.Encoding.DUAL_RAIL, "p2")]))
+
+        return sv
