@@ -672,3 +672,9 @@ def convert_polarized_state(state: BasicState,
                     prep_state_matrix = prep_state_matrix.inv()
                 prep_matrix[2*k_m:2*k_m+2, 2*k_m:2*k_m+2] = prep_state_matrix
     return BasicState(input_state), prep_matrix
+
+class StateGenerator:
+
+    def __init__(self, encoding):
+        assert encoding in ("raw")
+        self.encoding = encoding
