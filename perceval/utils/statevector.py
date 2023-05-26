@@ -42,6 +42,7 @@ from .matrix import Matrix
 from .format import simple_complex, simple_float
 from .globals import global_params
 from .polarization import Polarization
+from perceval.components.port import Encoding
 import numpy as np
 import sympy as sp
 
@@ -675,5 +676,7 @@ def convert_polarized_state(state: BasicState,
 
 class StateGenerator:
 
-    def __init__(self):
-        print("test")
+    def __init__(self, encoding):
+        assert isinstance(encoding, Encoding), "You need to provide an Encoding, e.g. Encoding.RAW or Encoding.DUAL_RAIL"
+        self.encoding = encoding
+        print("Test")
