@@ -678,7 +678,7 @@ def convert_polarized_state(state: BasicState,
 class StateGenerator:
 
     def __init__(self, encoding):
-        assert isinstance(encoding, perceval.Encoding), "You need to provide an Encoding, e.g. Encoding.RAW or Encoding.DUAL_RAIL"
+        assert isinstance(encoding, perceval.Encoding), "You need to provide an encoding, e.g. Encoding.RAW or Encoding.DUAL_RAIL"
         self.encoding = encoding
 
     def LogicalState(self, state: list[int]):
@@ -686,3 +686,28 @@ class StateGenerator:
         sv = StateVector(bs = ls.to_basic_state([perceval.Port(perceval.Encoding.DUAL_RAIL, "p1"), perceval.Port(perceval.Encoding.DUAL_RAIL, "p2")]))
 
         return sv
+
+    def BellState(self, state: str):
+
+        if state == "phi+":
+            sv = perceval.StateVector(perceval.BasicState("|1,0,1,0>")) + perceval.StateVector(perceval.BasicState("|0,1,0,1>"))
+            return sv
+        elif state == "phi-":
+            sv = perceval.StateVector(perceval.BasicState("|1,0,1,0>")) - perceval.StateVector(perceval.BasicState("|0,1,0,1>"))
+            return sv
+        elif state == "psi+":
+            sv = perceval.StateVector(perceval.BasicState("|1,0,0,1>")) + perceval.StateVector(perceval.BasicState("|0,1,1,0>"))
+            return sv
+        elif state == "psi-":
+            sv = perceval.StateVector(perceval.BasicState("|1,0,0,1>")) - perceval.StateVector(perceval.BasicState("|0,1,1,0>"))
+            return sv
+
+        raise ValueError("The state parameter must contain one of the bell states as a string: phi+,phi-,psi+,psi-")
+
+    def GHZState(self,n: int):
+
+        assert n>2, "A (generalized) Greenberger–Horne–Zeilinger state is only defined for n>2"
+        sv = perceval.StateVector(perceval.BasicState( [0] * n )) - perceval.StateVector(perceval.BasicState( [1] * n ))
+        return sv
+
+
