@@ -38,16 +38,18 @@ import itertools
 from typing import Dict, List, Union, Tuple, Optional
 from deprecated import deprecated
 
-import perceval
 from .matrix import Matrix
 from .format import simple_complex, simple_float
 from .globals import global_params
 from .polarization import Polarization
-
 import numpy as np
 import sympy as sp
 
 from exqalibur import FockState, FSArray
+
+from .. import Port
+from .. import LogicalState
+from .. import Encoding
 
 
 class BasicState(FockState):
@@ -678,28 +680,28 @@ def convert_polarized_state(state: BasicState,
 class StateGenerator:
 
     def __init__(self, encoding):
-        assert isinstance(encoding, perceval.Encoding), "You need to provide an encoding, e.g. Encoding.RAW or Encoding.DUAL_RAIL"
+        assert isinstance(encoding, Encoding), "You need to provide an encoding, e.g. Encoding.RAW or Encoding.DUAL_RAIL"
         self.encoding = encoding
 
     def LogicalState(self, state: list[int]):
-        ls = perceval.LogicalState(state)
-        sv = StateVector(bs = ls.to_basic_state([perceval.Port(perceval.Encoding.DUAL_RAIL, "p1"), perceval.Port(perceval.Encoding.DUAL_RAIL, "p2")]))
+        ls = LogicalState(state)
+        sv = StateVector(bs = ls.to_basic_state([Port(Encoding.DUAL_RAIL, "p1"), Port(Encoding.DUAL_RAIL, "p2")]))
 
         return sv
 
     def BellState(self, state: str):
 
         if state == "phi+":
-            sv = perceval.StateVector(perceval.BasicState("|1,0,1,0>")) + perceval.StateVector(perceval.BasicState("|0,1,0,1>"))
+            sv = StateVector(BasicState("|1,0,1,0>")) + StateVector(BasicState("|0,1,0,1>"))
             return sv
         elif state == "phi-":
-            sv = perceval.StateVector(perceval.BasicState("|1,0,1,0>")) - perceval.StateVector(perceval.BasicState("|0,1,0,1>"))
+            sv = StateVector(BasicState("|1,0,1,0>")) - StateVector(BasicState("|0,1,0,1>"))
             return sv
         elif state == "psi+":
-            sv = perceval.StateVector(perceval.BasicState("|1,0,0,1>")) + perceval.StateVector(perceval.BasicState("|0,1,1,0>"))
+            sv = StateVector(BasicState("|1,0,0,1>")) + StateVector(BasicState("|0,1,1,0>"))
             return sv
         elif state == "psi-":
-            sv = perceval.StateVector(perceval.BasicState("|1,0,0,1>")) - perceval.StateVector(perceval.BasicState("|0,1,1,0>"))
+            sv = StateVector(BasicState("|1,0,0,1>")) - StateVector(BasicState("|0,1,1,0>"))
             return sv
 
         raise ValueError("The state parameter must contain one of the bell states as a string: phi+,phi-,psi+,psi-")
@@ -707,7 +709,7 @@ class StateGenerator:
     def GHZState(self,n: int):
 
         assert n>2, "A (generalized) Greenberger–Horne–Zeilinger state is only defined for n>2"
-        sv = perceval.StateVector(perceval.BasicState( [0] * n )) - perceval.StateVector(perceval.BasicState( [1] * n ))
+        sv = StateVector(BasicState( [0] * n )) + StateVector(BasicState( [1] * n ))
         return sv
 
 
