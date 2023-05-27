@@ -676,6 +676,7 @@ def convert_polarized_state(state: BasicState,
 class StateGenerator:
 
     def __init__(self, encoding):
+        from .. import Encoding
         assert isinstance(encoding, Encoding), "You need to provide an encoding, e.g. Encoding.RAW or Encoding.DUAL_RAIL"
         self.encoding = encoding
 
