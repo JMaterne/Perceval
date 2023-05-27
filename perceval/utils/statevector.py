@@ -47,9 +47,7 @@ import sympy as sp
 
 from exqalibur import FockState, FSArray
 
-from .. import Port
-from .. import LogicalState
-from .. import Encoding
+import perceval.components.port as port
 
 
 class BasicState(FockState):
@@ -680,12 +678,12 @@ def convert_polarized_state(state: BasicState,
 class StateGenerator:
 
     def __init__(self, encoding):
-        assert isinstance(encoding, Encoding), "You need to provide an encoding, e.g. Encoding.RAW or Encoding.DUAL_RAIL"
+        assert isinstance(encoding, port.Encoding), "You need to provide an encoding, e.g. Encoding.RAW or Encoding.DUAL_RAIL"
         self.encoding = encoding
 
     def LogicalState(self, state: list[int]):
-        ls = LogicalState(state)
-        sv = StateVector(bs = ls.to_basic_state([Port(Encoding.DUAL_RAIL, "p1"), Port(Encoding.DUAL_RAIL, "p2")]))
+        ls = port.LogicalState(state)
+        sv = StateVector(bs = ls.to_basic_state([port.Port(port.Encoding.DUAL_RAIL, "p1"), port.Port(port.Encoding.DUAL_RAIL, "p2")]))
 
         return sv
 
