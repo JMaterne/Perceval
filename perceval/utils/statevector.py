@@ -676,11 +676,13 @@ def convert_polarized_state(state: BasicState,
 class StateGenerator:
 
     def __init__(self, encoding):
+        #import here because of trouble with cyclical imports when importing at module header
         from .. import Encoding
         assert isinstance(encoding, Encoding), "You need to provide an encoding, e.g. Encoding.RAW or Encoding.DUAL_RAIL"
         self.encoding = encoding
 
     def LogicalState(self, state: list[int]):
+        # import here because of trouble with cyclical imports when importing at module header
         from .. import Port
         from .. import LogicalState
         from .. import Encoding
@@ -707,7 +709,7 @@ class StateGenerator:
 
         raise ValueError("The state parameter must contain one of the bell states as a string: phi+,phi-,psi+,psi-")
 
-    def GHZState(self,n: int):
+    def GHZState(self, n: int):
 
         assert n>2, "A (generalized) Greenberger–Horne–Zeilinger state is only defined for n>2"
         sv = StateVector(BasicState( [0] * n )) + StateVector(BasicState( [1] * n ))
