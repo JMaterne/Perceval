@@ -47,10 +47,6 @@ import sympy as sp
 
 from exqalibur import FockState, FSArray
 
-from .. import Port
-from .. import LogicalState
-from .. import Encoding
-
 
 class BasicState(FockState):
     r"""Basic states
@@ -684,6 +680,10 @@ class StateGenerator:
         self.encoding = encoding
 
     def LogicalState(self, state: list[int]):
+        from .. import Port
+        from .. import LogicalState
+        from .. import Encoding
+
         ls = LogicalState(state)
         sv = StateVector(bs = ls.to_basic_state([Port(Encoding.DUAL_RAIL, "p1"), Port(Encoding.DUAL_RAIL, "p2")]))
 

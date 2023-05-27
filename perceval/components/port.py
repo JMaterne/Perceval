@@ -31,7 +31,7 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from typing import List
 
-from .. import BasicState
+from perceval.utils import BasicState
 from .abstract_component import AComponent
 
 
