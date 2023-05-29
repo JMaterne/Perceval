@@ -46,7 +46,7 @@ import numpy as np
 import sympy as sp
 
 from exqalibur import FockState, FSArray
-
+import networkx as nx
 
 class BasicState(FockState):
     r"""Basic states
@@ -676,7 +676,7 @@ def convert_polarized_state(state: BasicState,
 class StateGenerator:
 
     def __init__(self, encoding):
-        #import here because of trouble with cyclical imports when importing at module header
+        # import here because of trouble with cyclical imports when importing at module header
         from .. import Encoding
         assert isinstance(encoding, Encoding), "You need to provide an encoding, e.g. Encoding.RAW or Encoding.DUAL_RAIL"
         self.encoding = encoding
@@ -688,7 +688,7 @@ class StateGenerator:
         from .. import Encoding
 
         ls = LogicalState(state)
-        sv = StateVector(bs = ls.to_basic_state([Port(Encoding.DUAL_RAIL, "p1"), Port(Encoding.DUAL_RAIL, "p2")]))
+        sv = StateVector(bs=ls.to_basic_state([Port(Encoding.DUAL_RAIL, "p1"), Port(Encoding.DUAL_RAIL, "p2")]))
 
         return sv
 
@@ -712,7 +712,13 @@ class StateGenerator:
     def GHZState(self, n: int):
 
         assert n>2, "A (generalized) Greenberger–Horne–Zeilinger state is only defined for n>2"
-        sv = StateVector(BasicState( [0] * n )) + StateVector(BasicState( [1] * n ))
+        sv = StateVector(BasicState([0] * n)) + StateVector(BasicState([1] * n))
         return sv
 
+    def GraphState(self, graph: nx.Graph):
+        for u, v, weight in graph.edges.data("weight"):
 
+            if weight is not None:
+                # Do something useful with the edges
+                print(str(u) + " <-> " + str(v) + "    weight: " + str(weight))
+        return 0
