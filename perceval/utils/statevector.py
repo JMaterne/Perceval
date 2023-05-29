@@ -716,9 +716,6 @@ class StateGenerator:
         return sv
 
     def GraphState(self, graph: nx.Graph):
-        for u, v, weight in graph.edges.data("weight"):
-
-            if weight is not None:
-                # Do something useful with the edges
-                print(str(u) + " <-> " + str(v) + "    weight: " + str(weight))
+        for u, v in graph.edges:
+            print(str(u) + " <-> " + str(v))
         return 0
