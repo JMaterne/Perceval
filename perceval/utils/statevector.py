@@ -721,14 +721,18 @@ class StateGenerator:
         zst = BasicState("|1,0>")
         ost = BasicState("|0,1>")
         basicstates = [zst, ost]
+
+        #generate all basic states
         for i in range(1,graph.number_of_nodes()):
             for j in range(len(basicstates)):
                 basicstates.append(basicstates[j] * ost)
-                basicstates[j] = basicstates[j]*zst
+                basicstates[j] = basicstates[j] * zst
 
+        #calculate signum of each BasicState and add it to the result StateVector
         for bs in basicstates:
-            print(bs)
-
-        for u, v in graph.edges:
-            print(str(u) + " <-> " + str(v))
-        return 0
+            for u, v in graph.edges:
+                if basicstates[u*len(zst)] == ost and basicstates[v*len(zst)] == ost:
+                    sv = sv - bs
+                else:
+                    sv = sv + bs
+        return sv
