@@ -728,11 +728,20 @@ class StateGenerator:
                 basicstates.append(basicstates[j] * ost)
                 basicstates[j] = basicstates[j] * zst
 
-        #calculate signum of each BasicState and add it to the result StateVector
+        #calculate signum of each BasicState and add it to the result StateVector (corresponding to Controlled Z Gate)
         for bs in basicstates:
+            sgn = 1
             for u, v in graph.edges:
-                if basicstates[u*len(zst)] == ost and basicstates[v*len(zst)] == ost:
-                    sv = sv - bs
-                else:
-                    sv = sv + bs
+                enclen = len(zst)
+                posu = u * enclen
+                posz = v * enclen
+
+                if bs[posu:posu + enclen] == ost and bs[posz:posz + enclen] == ost:
+                    sgn = -1*sgn
+
+            if sgn == -1:
+                sv = sv - bs
+            else:
+                sv = sv + bs
+
         return sv
