@@ -679,8 +679,15 @@ class StateGenerator:
         # import here because of trouble with cyclical imports when importing at module header
         from .. import Encoding
         assert isinstance(encoding, Encoding), "You need to provide an encoding, e.g. Encoding.RAW or Encoding.DUAL_RAIL"
-        self.encoding = encoding
 
+        if(encoding == Encoding.RAW):
+            self.zerostate = BasicState("|0>")
+            self.onestate = BasicState("|1>")
+        elif(encoding == Encoding.DUAL_RAIL):
+            self.zerostate = BasicState("|1,0>")
+            self.onestate = BasicState("|0,1>")
+        elif(encoding == Encoding.POLARIZATION):
+            raise NotImplementedError
     def LogicalState(self, state: list[int]):
         # import here because of trouble with cyclical imports when importing at module header
         from .. import Port
@@ -710,16 +717,16 @@ class StateGenerator:
         raise ValueError("The state parameter must contain one of the bell states as a string: phi+,phi-,psi+,psi-")
 
     def GHZState(self, n: int):
-
+        
         assert n>2, "A (generalized) Greenberger–Horne–Zeilinger state is only defined for n>2"
-        sv = StateVector(BasicState([1,0] * n)) + StateVector(BasicState([0,1] * n))
+        sv = StateVector(self.zerostate ** n)) + StateVector(self.onestate ** n))
         return sv
 
     def GraphState(self, graph: nx.Graph):
 
         sv = StateVector()
-        zst = BasicState("|1,0>")
-        ost = BasicState("|0,1>")
+        zst = self.zerostate
+        ost = self.onestate
         basicstates = [zst, ost]
 
         #generate all basic states
