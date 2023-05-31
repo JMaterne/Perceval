@@ -722,7 +722,7 @@ class StateGenerator:
         ost = BasicState("|0,1>")
         basicstates = [zst, ost]
         for i in range(1,graph.number_of_nodes()):
-            for j in range(basicstates):
+            for j in range(len(basicstates)):
                 basicstates.append(basicstates[j] * ost)
                 basicstates[j] = basicstates[j]*zst
 
