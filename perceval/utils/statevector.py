@@ -48,6 +48,9 @@ import sympy as sp
 from exqalibur import FockState, FSArray
 import networkx as nx
 
+from .. import Encoding
+
+
 class BasicState(FockState):
     r"""Basic states
     """
@@ -676,8 +679,7 @@ def convert_polarized_state(state: BasicState,
 class StateGenerator:
 
     def __init__(self, encoding):
-        # import here because of trouble with cyclical imports when importing at module header
-        from .. import Encoding
+
         assert isinstance(encoding, Encoding), "You need to provide an encoding, e.g. Encoding.RAW or Encoding.DUAL_RAIL"
 
         if(encoding == Encoding.RAW):
@@ -727,15 +729,17 @@ class StateGenerator:
     def GraphState(self, graph: nx.Graph):
 
         sv = StateVector()
-        zst = self.zerostate
-        ost = self.onestate
-        basicstates = [zst, ost]
+
+        if graph.number_of_nodes() == 0:
+            return sv
+
+        basicstates = [self.onestate, self.zerostate]
 
         #generate all basic states
         for i in range(1,graph.number_of_nodes()):
             for j in range(len(basicstates)):
-                basicstates.append(basicstates[j] * ost)
-                basicstates[j] = basicstates[j] * zst
+                basicstates.append(basicstates[j] * self.onestate)
+                basicstates[j] = basicstates[j] * self.zerostate
 
         #calculate signum of each BasicState and add it to the result StateVector (corresponding to Controlled Z Gate)
         for bs in basicstates:
@@ -745,7 +749,7 @@ class StateGenerator:
                 posu = u * enclen
                 posz = v * enclen
 
-                if bs[posu:posu + enclen] == ost and bs[posz:posz + enclen] == ost:
+                if bs[posu:posu + enclen] == self.onestate and bs[posz:posz + enclen] == self.onestate:
                     sgn = -1*sgn
 
             if sgn == -1:
