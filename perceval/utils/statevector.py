@@ -703,7 +703,8 @@ class StateGenerator:
         elif encoding == Encoding.POLARIZATION:
             if len(polarization_base[0]) != 1 or len(polarization_base[1]) != 1:
                 raise ValueError("The BasicStates representing the polarization basis should only contain one mode")
-
+            self.zero_state = polarization_base[0]
+            self.one_state = polarization_base[1]
     def LogicalState(self, state: list[int]):
         r"""
         Generate a StateVector from a list of logical state
