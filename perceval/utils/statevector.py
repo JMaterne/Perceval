@@ -740,8 +740,8 @@ class StateGenerator:
                     sgn = -1*sgn
 
             if sgn == -1:
-                sv = sv - bs
+                sv = sv - StateVector(bs)
             else:
-                sv = sv + bs
+                sv = sv + StateVector(bs)
 
         return sv
