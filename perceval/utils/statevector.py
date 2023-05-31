@@ -695,11 +695,11 @@ class StateGenerator:
         assert isinstance(encoding, Encoding), "You need to provide an encoding"
 
         if encoding == Encoding.RAW:
-            self.zerostate = BasicState("|0>")
-            self.onestate = BasicState("|1>")
+            self.zero_state = BasicState("|0>")
+            self.one_state = BasicState("|1>")
         elif encoding == Encoding.DUAL_RAIL:
-            self.zerostate = BasicState("|1,0>")
-            self.onestate = BasicState("|0,1>")
+            self.zero_state = BasicState("|1,0>")
+            self.one_state = BasicState("|0,1>")
         elif encoding == Encoding.POLARIZATION:
             if len(polarization_base[0]) != 1 or len(polarization_base[1]) != 1:
                 raise ValueError("The BasicStates representing the polarization basis should only contain one mode")
@@ -716,9 +716,9 @@ class StateGenerator:
         sv = StateVector()
         for bit in state:
             if bit == 0:
-                sv = sv * self.zerostate
+                sv = sv * self.zero_state
             elif bit == 1:
-                sv = sv * self.onestate
+                sv = sv * self.one_state
             else:
                 raise ValueError("The argument list corresponding to a logical state should only contain 0s and 1s")
 
@@ -738,16 +738,16 @@ class StateGenerator:
         """
 
         if state == "phi+":
-            sv = StateVector(self.zerostate**2) + StateVector(BasicState(self.onestate**2))
+            sv = StateVector(self.zero_state ** 2) + StateVector(BasicState(self.one_state ** 2))
             return sv
         elif state == "phi-":
-            sv = StateVector(self.zerostate**2) - StateVector(self.onestate**2)
+            sv = StateVector(self.zero_state ** 2) - StateVector(self.one_state ** 2)
             return sv
         elif state == "psi+":
-            sv = StateVector(self.zerostate * self.onestate) + StateVector(self.onestate * self.zerostate)
+            sv = StateVector(self.zero_state * self.one_state) + StateVector(self.one_state * self.zero_state)
             return sv
         elif state == "psi-":
-            sv = StateVector(self.zerostate * self.onestate) - StateVector(self.onestate * self.zerostate)
+            sv = StateVector(self.zero_state * self.one_state) - StateVector(self.one_state * self.zero_state)
             return sv
 
         raise ValueError("The state parameter must contain one of the Bell states as a string: phi+,phi-,psi+,psi-")
@@ -761,7 +761,7 @@ class StateGenerator:
         Returns: StateVector representing the GHZ state
         """
         assert n>2, "A (generalized) Greenberger–Horne–Zeilinger state is only defined for n>2"
-        sv = StateVector(self.zerostate ** n) + StateVector(self.onestate ** n)
+        sv = StateVector(self.zero_state ** n) + StateVector(self.one_state ** n)
         return sv
 
     def GraphState(self, graph: nx.Graph):
@@ -777,23 +777,23 @@ class StateGenerator:
         if graph.number_of_nodes() == 0:
             return sv
 
-        basicstates = [self.onestate, self.zerostate]
+        basicstates = [self.one_state, self.zero_state]
 
         # generate all basic states
         for i in range(1,graph.number_of_nodes()):
             for j in range(len(basicstates)):
-                basicstates.append(basicstates[j] * self.onestate)
-                basicstates[j] = basicstates[j] * self.zerostate
+                basicstates.append(basicstates[j] * self.one_state)
+                basicstates[j] = basicstates[j] * self.zero_state
 
         # calculate signum of each BasicState and add it to the result StateVector (corresponding to Controlled Z Gate)
         for bs in basicstates:
             sgn = 1
             for u, v in graph.edges:
-                enclen = len(self.zerostate)
+                enclen = len(self.zero_state)
                 posu = u * enclen
                 posz = v * enclen
 
-                if bs[posu:posu + enclen] == self.onestate and bs[posz:posz + enclen] == self.onestate:
+                if bs[posu:posu + enclen] == self.one_state and bs[posz:posz + enclen] == self.one_state:
                     sgn = -1*sgn
 
             if sgn == -1:
