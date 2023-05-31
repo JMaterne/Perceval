@@ -689,29 +689,31 @@ class StateGenerator:
         elif(encoding == Encoding.POLARIZATION):
             raise NotImplementedError
     def LogicalState(self, state: list[int]):
-        # import here because of trouble with cyclical imports when importing at module header
-        from .. import Port
-        from .. import LogicalState
-        from .. import Encoding
+        sv = StateVector()
 
-        ls = LogicalState(state)
-        sv = StateVector(bs=ls.to_basic_state([Port(Encoding.DUAL_RAIL, "p1"), Port(Encoding.DUAL_RAIL, "p2")]))
+        for bit in state:
+            if bit == 0:
+                sv = sv * self.zerostate
+            elif bit == 1:
+                sv = sv * self.onestate
+            else:
+                raise ValueError("The argument list corresponding to a logical state should only contain 0s and 1s")
 
         return sv
 
     def BellState(self, state: str):
 
         if state == "phi+":
-            sv = StateVector(BasicState("|1,0,1,0>")) + StateVector(BasicState("|0,1,0,1>"))
+            sv = StateVector(self.zerostate**2) + StateVector(BasicState(self.onestate**2))
             return sv
         elif state == "phi-":
-            sv = StateVector(BasicState("|1,0,1,0>")) - StateVector(BasicState("|0,1,0,1>"))
+            sv = StateVector(self.zerostate**2) - StateVector(self.onestate**2)
             return sv
         elif state == "psi+":
-            sv = StateVector(BasicState("|1,0,0,1>")) + StateVector(BasicState("|0,1,1,0>"))
+            sv = StateVector(self.zerostate * self.onestate) + StateVector(self.onestate * self.zerostate)
             return sv
         elif state == "psi-":
-            sv = StateVector(BasicState("|1,0,0,1>")) - StateVector(BasicState("|0,1,1,0>"))
+            sv = StateVector(self.zerostate * self.onestate) - StateVector(self.onestate * self.zerostate)
             return sv
 
         raise ValueError("The state parameter must contain one of the bell states as a string: phi+,phi-,psi+,psi-")
@@ -719,7 +721,7 @@ class StateGenerator:
     def GHZState(self, n: int):
         
         assert n>2, "A (generalized) Greenberger–Horne–Zeilinger state is only defined for n>2"
-        sv = StateVector(self.zerostate ** n)) + StateVector(self.onestate ** n))
+        sv = StateVector(self.zerostate ** n) + StateVector(self.onestate ** n)
         return sv
 
     def GraphState(self, graph: nx.Graph):
