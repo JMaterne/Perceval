@@ -677,24 +677,43 @@ def convert_polarized_state(state: BasicState,
     return BasicState(input_state), prep_matrix
 
 class StateGenerator:
+    r"""StateGenerator
+    """
+    def __init__(self, encoding, polarization_base=(BasicState("|{P:H}>"), BasicState("|{P:V}>"))):
+        r"""
+        StateGenerator class for conveniently generating common complex StateVectors
+        Args:
+            encoding: for specifying the output format of the StateVector
+            supported are Encoding.RAW, Encoding.DUAL_RAIL, Encoding.POLARIZATION
 
-    def __init__(self, encoding):
-        #import here because of trouble with circular dependencies when importing from file header
+            polarization_base:(optional) you can provide your own polarization basis as a tuple of BasicStates
+            default=(BasicState("|{P:H}>"), BasicState("|{P:V}>")
+        """
+        # import here because of trouble with circular dependencies when importing from file header
         from .. import Encoding
 
-        assert isinstance(encoding, Encoding), "You need to provide an encoding, e.g. Encoding.RAW or Encoding.DUAL_RAIL"
+        assert isinstance(encoding, Encoding), "You need to provide an encoding"
 
-        if(encoding == Encoding.RAW):
+        if encoding == Encoding.RAW:
             self.zerostate = BasicState("|0>")
             self.onestate = BasicState("|1>")
-        elif(encoding == Encoding.DUAL_RAIL):
+        elif encoding == Encoding.DUAL_RAIL:
             self.zerostate = BasicState("|1,0>")
             self.onestate = BasicState("|0,1>")
-        elif(encoding == Encoding.POLARIZATION):
-            raise NotImplementedError
-    def LogicalState(self, state: list[int]):
-        sv = StateVector()
+        elif encoding == Encoding.POLARIZATION:
+            if len(polarization_base[0]) != 1 or len(polarization_base[1]) != 1:
+                raise ValueError("The BasicStates representing the polarization basis should only contain one mode")
 
+    def LogicalState(self, state: list[int]):
+        r"""
+        Generate a StateVector from a list of logical state
+        Args:
+            state: list of bits
+
+        Returns: StateVector representing the logical state
+        """
+
+        sv = StateVector()
         for bit in state:
             if bit == 0:
                 sv = sv * self.zerostate
@@ -706,6 +725,17 @@ class StateGenerator:
         return sv
 
     def BellState(self, state: str):
+        r"""
+        Generate a StateVector representing a Bell state
+        Args:
+            state: name of the bell state you want to generate:
+            \"phi+\" = (|0,0>+|1,1>)/sqrt(2)
+            \"phi-\" = (|0,0>-|1,1>)/sqrt(2)
+            \"psi+\" = (|0,1>+|1,0>)/sqrt(2)
+            \"psi-\" = (|0,1>-|1,0>)/sqrt(2)
+
+        Returns: corresponding StateVector
+        """
 
         if state == "phi+":
             sv = StateVector(self.zerostate**2) + StateVector(BasicState(self.onestate**2))
@@ -720,16 +750,28 @@ class StateGenerator:
             sv = StateVector(self.zerostate * self.onestate) - StateVector(self.onestate * self.zerostate)
             return sv
 
-        raise ValueError("The state parameter must contain one of the bell states as a string: phi+,phi-,psi+,psi-")
+        raise ValueError("The state parameter must contain one of the Bell states as a string: phi+,phi-,psi+,psi-")
 
     def GHZState(self, n: int):
-        
+        r"""
+        Generate a StateVector representing a (generalized) Greenberger–Horne–Zeilinger state
+        Args:
+            n: order of the GHZ state
+
+        Returns: StateVector representing the GHZ state
+        """
         assert n>2, "A (generalized) Greenberger–Horne–Zeilinger state is only defined for n>2"
         sv = StateVector(self.zerostate ** n) + StateVector(self.onestate ** n)
         return sv
 
     def GraphState(self, graph: nx.Graph):
+        r"""
+        Generate a StateVector representing a graph state.
+        Args:
+            graph: networkx.Graph object. Edge weights are ignored.
 
+        Returns: StateVector representing the graph state
+        """
         sv = StateVector()
 
         if graph.number_of_nodes() == 0:
@@ -737,13 +779,13 @@ class StateGenerator:
 
         basicstates = [self.onestate, self.zerostate]
 
-        #generate all basic states
+        # generate all basic states
         for i in range(1,graph.number_of_nodes()):
             for j in range(len(basicstates)):
                 basicstates.append(basicstates[j] * self.onestate)
                 basicstates[j] = basicstates[j] * self.zerostate
 
-        #calculate signum of each BasicState and add it to the result StateVector (corresponding to Controlled Z Gate)
+        # calculate signum of each BasicState and add it to the result StateVector (corresponding to Controlled Z Gate)
         for bs in basicstates:
             sgn = 1
             for u, v in graph.edges:
