@@ -48,7 +48,7 @@ import sympy as sp
 from exqalibur import FockState, FSArray
 import networkx as nx
 
-from .. import Encoding
+
 
 
 class BasicState(FockState):
@@ -679,6 +679,8 @@ def convert_polarized_state(state: BasicState,
 class StateGenerator:
 
     def __init__(self, encoding):
+        #import here because of trouble with circular dependencies when importing from file header
+        from .. import Encoding
 
         assert isinstance(encoding, Encoding), "You need to provide an encoding, e.g. Encoding.RAW or Encoding.DUAL_RAIL"
 
@@ -745,7 +747,7 @@ class StateGenerator:
         for bs in basicstates:
             sgn = 1
             for u, v in graph.edges:
-                enclen = len(zst)
+                enclen = len(self.zerostate)
                 posu = u * enclen
                 posz = v * enclen
 
