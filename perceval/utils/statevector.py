@@ -49,8 +49,6 @@ from exqalibur import FockState, FSArray
 import networkx as nx
 
 
-
-
 class BasicState(FockState):
     r"""Basic states
     """
