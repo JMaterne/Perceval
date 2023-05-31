@@ -712,10 +712,23 @@ class StateGenerator:
     def GHZState(self, n: int):
 
         assert n>2, "A (generalized) Greenberger–Horne–Zeilinger state is only defined for n>2"
-        sv = StateVector(BasicState([0] * n)) + StateVector(BasicState([1] * n))
+        sv = StateVector(BasicState([1,0] * n)) + StateVector(BasicState([0,1] * n))
         return sv
 
     def GraphState(self, graph: nx.Graph):
+
+        sv = StateVector()
+        zst = BasicState("|1,0>")
+        ost = BasicState("|0,1>")
+        basicstates = [zst, ost]
+        for i in range(1,graph.number_of_nodes()):
+            for j in range(basicstates):
+                basicstates.append(basicstates[j] * ost)
+                basicstates[j] = basicstates[j]*zst
+
+        for bs in basicstates:
+            print(bs)
+
         for u, v in graph.edges:
             print(str(u) + " <-> " + str(v))
         return 0
